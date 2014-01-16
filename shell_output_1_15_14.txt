@@ -1,0 +1,46 @@
+START: CYGWIN: 1/15/2014, 10:12 a.m.
+
+# Take the monthly data and put them into files that contain all of the data for a given year
+
+Connor@Sigma ~
+$ cd /cygdrive/c/Users/Connor/Documents/250_Data/
+
+Connor@Sigma /cygdrive/c/Users/Connor/Documents/250_Data
+$ cat 2008* > 2008.csv
+
+Connor@Sigma /cygdrive/c/Users/Connor/Documents/250_Data
+$ cat 2009* > 2009.csv
+
+Connor@Sigma /cygdrive/c/Users/Connor/Documents/250_Data
+$ cat 2010* > 2010.csv
+
+Connor@Sigma /cygdrive/c/Users/Connor/Documents/250_Data
+$ cat 2011* > 2011.csv
+
+Connor@Sigma /cygdrive/c/Users/Connor/Documents/250_Data
+$ cat 2012* > 2012.csv
+
+# Take out the columns with the ArrDelay information, and get rid of the head files using grep. Do it in chunks so it goes faster and so R doesn't break when the data is sucked in
+
+Connor@Sigma /cygdrive/c/Users/Connor/Documents/250_Data
+$ cut -f 15 -d, 198* | grep -v "ArrDelay" > ArrDelay_1987_1989.csv
+
+Connor@Sigma /cygdrive/c/Users/Connor/Documents/250_Data
+$ cut -f 15 -d, 199* | grep -v "ArrDelay" > ArrDelay_1990_1999.csv
+
+Connor@Sigma /cygdrive/c/Users/Connor/Documents/250_Data
+$ cut -f 15 -d, 2000.csv 2001.csv 2002.csv 2003.csv 2004.csv | grep -v "ArrDelay" > ArrDelay_2000_2004.csv
+
+Connor@Sigma /cygdrive/c/Users/Connor/Documents/250_Data
+$ cut -f 15 -d, 2005.csv 2006.csv 2007.csv| grep -v "ArrDelay" > ArrDelay_2005_2007.csv
+
+# The data format changes for 2008 and further, so switch to the 45th column to grab the "ARR_DEL15" info, without the headers
+
+Connor@Sigma /cygdrive/c/Users/Connor/Documents/250_Data
+$ cut -f 45 -d, 2008.csv 2009.csv 2010.csv 2011.csv 2012.csv | grep -v "ARR_DEL15" > ArrDelay_2008_2012.csv
+
+# Now go to R to anaylze the reduced data 
+
+START: CYGWIN: 1/15/2014, 10:49 a.m.
+
+~ 37 minutes of total computing time for reducing the data (took quite a while! But not an exceptional amount of time).

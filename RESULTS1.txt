@@ -1,0 +1,83 @@
+1. The method I used for implementation in this assignment was to reduce the data in the shell by extracting only the Arrival Delay values. I then broke the data into five files to spread out the data so that it could be read into R in chunks. From there, I calculated weighted mean, weighted standard deviation, and weighted median from my files containing only Arrival Delay integer values, which, again, were broken into five different chunks that I split up, for the most part, arbitrarily in the shell.
+
+2. The values I obtained using this method were:
+	Mean: 6.5659
+	SD: 31.22296
+	Median: -0.911
+
+3. The files I processed were all of the .CSV files extracted from the compressed archive 'Delays1987_2012.tar.bz2'. For the monthly data, I combined the individual months into yearly files called '2008.csv', '2009.csv', etc. Finally, the files I processed in R consisted of Arrival Delay information for chunks of years. These files are entitiled:
+	ArrDelay_1987_1989.csv
+	ArrDelay_1990_1999.csv
+	ArrDelay_2000_2004.csv
+	ArrDelay_2005_2007.csv
+	ArrDelay_2008_2012.csv
+
+4. Shell Commands:
+
+# Take the monthly data and put them into files that contain all of the data for a given year
+
+Connor@Sigma ~
+$ cd /cygdrive/c/Users/Connor/Documents/250_Data/
+
+Connor@Sigma /cygdrive/c/Users/Connor/Documents/250_Data
+$ cat 2008* > 2008.csv
+
+Connor@Sigma /cygdrive/c/Users/Connor/Documents/250_Data
+$ cat 2009* > 2009.csv
+
+Connor@Sigma /cygdrive/c/Users/Connor/Documents/250_Data
+$ cat 2010* > 2010.csv
+
+Connor@Sigma /cygdrive/c/Users/Connor/Documents/250_Data
+$ cat 2011* > 2011.csv
+
+Connor@Sigma /cygdrive/c/Users/Connor/Documents/250_Data
+$ cat 2012* > 2012.csv
+
+# Take out the columns with the ArrDelay information, and get rid of the head files using grep. Do it in chunks so it goes faster and so R doesn't break when the data is sucked in
+
+Connor@Sigma /cygdrive/c/Users/Connor/Documents/250_Data
+$ cut -f 15 -d, 198* | grep -v "ArrDelay" > ArrDelay_1987_1989.csv
+
+Connor@Sigma /cygdrive/c/Users/Connor/Documents/250_Data
+$ cut -f 15 -d, 199* | grep -v "ArrDelay" > ArrDelay_1990_1999.csv
+
+Connor@Sigma /cygdrive/c/Users/Connor/Documents/250_Data
+$ cut -f 15 -d, 2000.csv 2001.csv 2002.csv 2003.csv 2004.csv | grep -v "ArrDelay" > ArrDelay_2000_2004.csv
+
+Connor@Sigma /cygdrive/c/Users/Connor/Documents/250_Data
+$ cut -f 15 -d, 2005.csv 2006.csv 2007.csv| grep -v "ArrDelay" > ArrDelay_2005_2007.csv
+
+# The data format changes for 2008 and further, so switch to the 45th column to grab the "ARR_DEL15" info, without the headers
+
+Connor@Sigma /cygdrive/c/Users/Connor/Documents/250_Data
+$ cut -f 45 -d, 2008.csv 2009.csv 2010.csv 2011.csv 2012.csv | grep -v "ARR_DEL15" > ArrDelay_2008_2012.csv
+
+# Now go to R to anaylze the reduced data 
+
+	R Commands:
+
+## Computing the results from the data
+
+library(SDMTools) # Will use this to construct weighted mean, standard deviation and median
+
+setwd("~/250_Data") # Be in the directory with the data
+
+Delay1987_1989 = as.integer(readLines('ArrDelay_1987_1989.csv'))
+Delay1990_1999 = as.integer(readLines('ArrDelay_1990_1999.csv'))
+Delay2000_2004 = as.integer(readLines('ArrDelay_2000_2004.csv'))
+Delay2005_2007 = as.integer(readLines('ArrDelay_2005_2007.csv'))
+Delay2008_2012 = as.integer(readLines('ArrDelay_2008_2012.csv')) # Read in the delay values, turn them into integers; keep them as blocks so as to avoid numerical overflow
+
+mu = wt.mean(c(mean(Delay1987_1989, na.rm = TRUE), mean(Delay1990_1999, na.rm = TRUE), mean(Delay2000_2004, na.rm = TRUE), mean(Delay2005_2007, na.rm = TRUE), mean(Delay2008_2012, na.rm = TRUE)), c(length(Delay1987_1989), length(Delay1990_1999), length(Delay2000_2004), length(Delay2005_2007), length(Delay2008_2012))) # Use the weighted mean function; to reduce computing time, average the means of each file with the weights corresponding to how many observations are in each file, instead of inputting all of the values and then averaging them (take the weighted mean of means to  approximate a good estimate of the population mean)
+
+std = wt.mean(c(sd(Delay1987_1989, na.rm = TRUE), sd(Delay1990_1999, na.rm = TRUE), sd(Delay2000_2004, na.rm = TRUE), sd(Delay2005_2007, na.rm = TRUE), sd(Delay2008_2012, na.rm = TRUE)), c(length(Delay1987_1989),length(Delay1990_1999),length(Delay2000_2004),length(Delay2005_2007),length(Delay2008_2012))) # Do the same thing, but average the standard deviations of each file, and have the same weights (this should give an okay approximation of the standard deviation)
+
+med = wt.mean(c(median(Delay1987_1989, na.rm = TRUE), median(Delay1990_1999, na.rm = TRUE), median(Delay2000_2004, na.rm = TRUE), median(Delay2005_2007, na.rm = TRUE), median(Delay2008_2012, na.rm = TRUE)), c(length(Delay1987_1989), length(Delay1990_1999), length(Delay2000_2004), length(Delay2005_2007), length(Delay2008_2012))) # Do the same thing, but this time average the medians of each file, using the same weights (I actually have no idea how good of an approximation of the median this will be, but this is all I could think of doing)
+
+5. Time Taken:
+	
+In the Shell: I did a rudimentary log of my shell tasks by checking the time when I started and when I ended, just running the commands that are included above in Part 4. That took me from 10:12 a.m. to 10:49 a.m., so about 37 minutes for reducing the data and then collapsing it into chunked data files. 
+
+In R, I ran Sys.time() before running my code, and then checked the time difference after computing was finished. In R, the time was a mere 1.37 minutes, but that could still be faster. Overall, the computations to extract the data and compute the relevant statistics took about 40 minutes.
+	
