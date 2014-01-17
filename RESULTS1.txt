@@ -1,11 +1,19 @@
-1. The method I used for implementation in this assignment was to reduce the data in the shell by extracting only the Arrival Delay values. I then broke the data into five files to spread out the data so that it could be read into R in chunks. From there, I calculated weighted mean, weighted standard deviation, and weighted median from my files containing only Arrival Delay integer values, which, again, were broken into five different chunks that I split up, for the most part, arbitrarily in the shell.
+1. The method I used for implementation in this assignment was to reduce the data in the shell by extracting only the 
+Arrival Delay values. I then broke the data into five files to spread out the data so that it could be read into R in 
+chunks. From there, I calculated weighted mean, weighted standard deviation, and weighted median from my files 
+containing only Arrival Delay integer values, which, again, were broken into five different chunks that I split up, 
+for the most part, arbitrarily in the shell.
 
 2. The values I obtained using this method were:
 	Mean: 6.5659
 	SD: 31.22296
 	Median: -0.911
 
-3. The files I processed were all of the .CSV files extracted from the compressed archive 'Delays1987_2012.tar.bz2'. For the monthly data, I combined the individual months into yearly files called '2008.csv', '2009.csv', etc. Finally, the files I processed in R consisted of Arrival Delay information for chunks of years. These files are entitiled:
+3. The files I processed were all of the .CSV files extracted from the compressed archive 'Delays1987_2013.tar.bz2'. 
+For the monthly data, I combined the individual months into yearly files called '2008.csv', '2009.csv', etc. 
+Finally, the files I processed in R consisted of Arrival Delay information for chunks of years. 
+These files are entitiled:
+
 	ArrDelay_1987_1989.csv
 	ArrDelay_1990_1999.csv
 	ArrDelay_2000_2004.csv
@@ -13,6 +21,11 @@
 	ArrDelay_2008_2012.csv
 
 4. Shell Commands:
+
+# Unzip the compressed archive
+
+Connor@Sigma ~
+$ tar -xvjf Delays1987_2013.tar.bz2
 
 # Take the monthly data and put them into files that contain all of the data for a given year
 
@@ -77,7 +90,7 @@ med = wt.mean(c(median(Delay1987_1989, na.rm = TRUE), median(Delay1990_1999, na.
 
 5. Time Taken:
 	
-In the Shell: I did a rudimentary log of my shell tasks by checking the time when I started and when I ended, just running the commands that are included above in Part 4. That took me from 10:12 a.m. to 10:49 a.m., so about 37 minutes for reducing the data and then collapsing it into chunked data files. 
+In the Shell: I did a rudimentary log of my shell tasks by checking the time when I started and when I ended, just running the commands that are included above in Part 4. That took me from 10:12 a.m. to 11:49 a.m., so about an hour and thirty-seven minutes for reducing the data and then collapsing it into chunked data files. 
 
 In R, I ran Sys.time() before running my code, and then checked the time difference after computing was finished. In R, the time was a mere 1.37 minutes, but that could still be faster. Overall, the computations to extract the data and compute the relevant statistics took about 40 minutes.
 	
